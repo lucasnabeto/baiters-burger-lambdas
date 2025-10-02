@@ -85,10 +85,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
 
-      - name: Download artifacts
+      - name: Download lambda authentication
         uses: actions/download-artifact@v4
         with:
-          pattern: lambda-*-zip
+          name: lambda-user-password-zip
+          path: ./lambdas
+
+      - name: Download lambda authorizer
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-authorizer-zip
           path: ./lambdas
 
       - name: Configure AWS credentials
@@ -102,5 +108,5 @@ jobs:
       - name: Upload Lambda code to AWS S3
         run: |
           ls -la
-          aws s3 cp ./lambda_user_password.zip s3://baiters-burger-lambdas/
-          aws s3 cp ./lambda_authorizer.zip s3://baiters-burger-lambdas/
+          aws s3 cp lambda_user_password.zip s3://baiters-burger-lambdas/
+          aws s3 cp lambda_authorizer.zip s3://baiters-burger-lambdas/
