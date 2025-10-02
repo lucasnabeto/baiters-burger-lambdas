@@ -28,6 +28,9 @@ jobs:
       - name: Set up infrastructure
         run: terraform init
 
+      - name: Validate Terraform configuration
+        run: terraform validate
+
       - name: Plan infrastructure changes
         run: terraform plan
 
@@ -107,6 +110,5 @@ jobs:
 
       - name: Upload Lambda code to AWS S3
         run: |
-          ls -la
           aws s3 cp lambda_user_password.zip s3://baiters-burger-lambdas/
           aws s3 cp lambda_authorizer.zip s3://baiters-burger-lambdas/
