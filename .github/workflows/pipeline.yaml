@@ -50,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lambda-zips
-          path: lambda_user_password.zip
+          path: ./lambdas/lambda_user_password.zip
 
   zip-lambda-authorizer-code:
     runs-on: ubuntu-latest
@@ -68,7 +68,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lambda-zips
-          path: lambda_authorizer.zip
+          path: ./lambdas/lambda_authorizer.zip
 
   upload-lambda-codes:
     runs-on: ubuntu-latest
