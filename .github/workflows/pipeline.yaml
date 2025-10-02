@@ -22,6 +22,9 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: us-east-1
 
+      - name: Add Terraform
+        uses: hashicorp/setup-terraform@v3
+
       - name: Set up infrastructure
         run: terraform init
 
