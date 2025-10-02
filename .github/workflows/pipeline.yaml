@@ -101,5 +101,6 @@ jobs:
 
       - name: Upload Lambda code to AWS S3
         run: |
-          aws s3 cp lambda_user_password.zip s3://baiters-burger-lambdas/
-          aws s3 cp lambda_authorizer.zip s3://baiters-burger-lambdas/
+          ls -la
+          aws s3 cp ./lambda_user_password.zip s3://baiters-burger-lambdas/
+          aws s3 cp ./lambda_authorizer.zip s3://baiters-burger-lambdas/
