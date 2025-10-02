@@ -1,2 +1,3 @@
-# baiters-burger-lambda
-Lambda function for Baiters Burger's authentication service.
+# baiters-burger-lambdas
+
+Lambdas functions for Baiters Burger's authentication service.
