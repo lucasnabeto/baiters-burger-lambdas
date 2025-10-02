@@ -1,98 +1,98 @@
 on:
-    push:
-        branches:
-            - develop
+  push:
+    branches:
+      - develop
 
 name: CI/CD Pipeline
 jobs:
-    provide-s3-bucket:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./infra
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5.0.0
+  provide-s3-bucket:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
 
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-                  aws-region: us-east-1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
 
-            - name: Set up infrastructure
-              run: terraform init
+      - name: Set up infrastructure
+        run: terraform init
 
-            - name: Plan infrastructure changes
-              run: terraform plan
+      - name: Plan infrastructure changes
+        run: terraform plan
 
-            - name: Apply infrastructure changes
-              run: terraform apply -auto-approve
+      - name: Apply infrastructure changes
+        run: terraform apply -auto-approve
 
-    zip-lambda-user-password-code:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./lambdas
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5.0.0
+  zip-lambda-user-password-code:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./lambdas
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
 
-            - name: Zip source code
-              run: zip -j lambda_user_password.zip lambda-user-pass.js
+      - name: Zip source code
+        run: zip -j lambda_user_password.zip lambda-user-pass.js
 
-            - name: Upload artifact
-              uses: actions/upload-artifact@v3
-              with:
-                  name: lambda-zips
-                  path: lambda_user_password.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-zips
+          path: lambda_user_password.zip
 
-    zip-lambda-authorizer-code:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./lambdas
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5.0.0
+  zip-lambda-authorizer-code:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./lambdas
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5.0.0
 
-            - name: Zip source code
-              run: zip -j lambda_authorizer.zip lambda-authorizer.js
+      - name: Zip source code
+        run: zip -j lambda_authorizer.zip lambda-authorizer.js
 
-            - name: Upload artifact
-              uses: actions/upload-artifact@v3
-              with:
-                  name: lambda-zips
-                  path: lambda_authorizer.zip
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lambda-zips
+          path: lambda_authorizer.zip
 
-    upload-lambda-codes:
-        runs-on: ubuntu-latest
-        defaults:
-            run:
-                working-directory: ./lambdas
-        needs:
-            [
-                provide-s3-bucket,
-                zip-lambda-user-password-code,
-                zip-lambda-authorizer-code,
-            ]
-        steps:
-            - name: Configure AWS credentials
-              uses: aws-actions/configure-aws-credentials@v4
-              with:
-                  aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-                  aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-                  aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-                  aws-region: us-east-1
+  upload-lambda-codes:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./lambdas
+    needs:
+      [
+        provide-s3-bucket,
+        zip-lambda-user-password-code,
+        zip-lambda-authorizer-code,
+      ]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: us-east-1
 
-            - name: Download artifacts
-              uses: actions/download-artifact@v3
-              with:
-                  name: lambda-zips
+      - name: Download artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: lambda-zips
 
-            - name: Upload Lambda code to AWS S3
-              run: |
-                  aws s3 cp lambda_user_password.zip s3://baiters-burger-lambdas/
-                  aws s3 cp lambda_authorizer.zip s3://baiters-burger-lambdas/
+      - name: Upload Lambda code to AWS S3
+        run: |
+          aws s3 cp lambda_user_password.zip s3://baiters-burger-lambdas/
+          aws s3 cp lambda_authorizer.zip s3://baiters-burger-lambdas/
