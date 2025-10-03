@@ -14,8 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
 
-      - name: Zip source code
-        run: zip -j lambda_user_password.zip lambda-user-pass.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v5.0.0
+        with:
+          node-version: "18"
+
+      - name: Install required dependency
+        run: npm install @aws-sdk/client-cognito-identity-provider
+
+      - name: Zip source code and dependencies
+        run: zip -r lambda_user_password.zip lambda-user-pass.js node_modules/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -32,8 +40,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5.0.0
 
-      - name: Zip source code
-        run: zip -j lambda_authorizer.zip lambda-authorizer.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v5.0.0
+        with:
+          node-version: "18"
+
+      - name: Install required dependency
+        run: npm install aws-jwt-verify
+
+      - name: Zip source code and dependencies
+        run: zip -r lambda_authorizer.zip lambda-authorizer.js node_modules/
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
