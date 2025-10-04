@@ -1,8 +1,8 @@
-const {
+import {
     CognitoIdentityProviderClient,
     AdminInitiateAuthCommand,
-} = require("@aws-sdk/client-cognito-identity-provider");
-const crypto = require("crypto");
+} from "@aws-sdk/client-cognito-identity-provider";
+import { createHmac } from "crypto";
 
 const USER_POOL_ID = process.env.COGNITO_USER_POOL_ID;
 const CLIENT_ID = process.env.COGNITO_APP_CLIENT_ID;
@@ -11,12 +11,12 @@ const CLIENT_SECRET = process.env.COGNITO_APP_CLIENT_SECRET;
 const cognitoClient = new CognitoIdentityProviderClient({});
 
 function getSecretHash(username) {
-    const hmac = crypto.createHmac("sha256", CLIENT_SECRET);
+    const hmac = createHmac("sha256", CLIENT_SECRET);
     hmac.update(username + CLIENT_ID);
     return hmac.digest("base64");
 }
 
-exports.handler = async (event, context) => {
+export async function handler(event, context) {
     try {
         let body;
 
@@ -102,4 +102,4 @@ exports.handler = async (event, context) => {
             };
         }
     }
-};
+}

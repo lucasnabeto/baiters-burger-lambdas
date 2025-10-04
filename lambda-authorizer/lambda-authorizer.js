@@ -1,9 +1,14 @@
-const { CognitoJwtVerifier } = require("aws-jwt-verify");
+import { CognitoJwtVerifier } from "aws-jwt-verify";
 
-const verifier = CognitoJwtVerifier.create({
+const APP_CLIENT_IDS = [
+    process.env.COGNITO_APP_CLIENT_ID_LOGIN,
+    process.env.COGNITO_APP_CLIENT_ID_MACHINE,
+];
+
+const cognitoVerifier = CognitoJwtVerifier.create({
     userPoolId: process.env.COGNITO_USER_POOL_ID,
     tokenUse: "access",
-    clientId: process.env.COGNITO_APP_CLIENT_ID,
+    clientId: APP_CLIENT_IDS,
 });
 
 const generatePolicy = (principalId, effect, resource) => {
@@ -24,7 +29,7 @@ const generatePolicy = (principalId, effect, resource) => {
     return authResponse;
 };
 
-exports.handler = async (event) => {
+export async function handler(event) {
     console.log(
         "Evento do Authorizer recebido:",
         JSON.stringify(event, null, 2)
@@ -37,14 +42,16 @@ exports.handler = async (event) => {
         return generatePolicy("user", "Deny", event.methodArn);
     }
 
-    const jwt = token.split(" ")[1];
-    if (!jwt) {
-        console.log("Token mal formatado. 'Bearer ' não encontrado.");
+    // Tenta extrair o JWT. Espera 'Bearer <token>'.
+    const parts = token.split(" ");
+    if (parts.length !== 2 || parts[0].toLowerCase() !== "bearer") {
+        console.log("Token mal formatado. Deve ser 'Bearer <token>'.");
         return generatePolicy("user", "Deny", event.methodArn);
     }
 
     try {
-        const payload = await verifier.verify(jwt);
+        const jwt = parts[1];
+        const payload = await cognitoVerifier.verify(jwt);
         console.log("Token é válido. Payload:", payload);
 
         return generatePolicy(
@@ -56,4 +63,4 @@ exports.handler = async (event) => {
         console.error("Token inválido:", err);
         return generatePolicy("user", "Deny", event.methodArn);
     }
-};
+}
