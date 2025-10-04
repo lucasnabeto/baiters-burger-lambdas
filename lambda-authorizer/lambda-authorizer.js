@@ -1,4 +1,4 @@
-import { CognitoJwtVerifier } from "aws-jwt-verify";
+const { CognitoJwtVerifier } = require("aws-jwt-verify");
 
 const APP_CLIENT_IDS = [
     process.env.COGNITO_APP_CLIENT_ID_LOGIN,
@@ -29,7 +29,7 @@ const generatePolicy = (principalId, effect, resource) => {
     return authResponse;
 };
 
-export async function handler(event) {
+exports.handler = async (event) => {
     console.log(
         "Evento do Authorizer recebido:",
         JSON.stringify(event, null, 2)
@@ -63,4 +63,4 @@ export async function handler(event) {
         console.error("Token inválido:", err);
         return generatePolicy("user", "Deny", event.methodArn);
     }
-}
+};
