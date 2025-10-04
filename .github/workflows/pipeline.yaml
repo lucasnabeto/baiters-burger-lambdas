@@ -30,7 +30,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lambda-user-password-zip
-          path: ./lambda_user_password.zip
+          path: ./lambda-login/lambda_user_password.zip
 
   zip-lambda-authorizer-code:
     name: Zip Lambda authorizer code
@@ -51,13 +51,13 @@ jobs:
         run: npm install
 
       - name: Zip source code and dependencies
-        run: zip -r lambda_authorizer.zip lambda-authorizer.js node_modules/
+        run: zip -r lambda_authorizer.zip .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: lambda-authorizer-zip
-          path: ./lambda_authorizer.zip
+          path: ./lambda-authorizer/lambda_authorizer.zip
 
   upload-lambda-codes-to-s3:
     name: Upload Lambda codes to AWS S3 bucket
