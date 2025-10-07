@@ -1,4 +1,4 @@
-# Baiters Burger - Lambdas de Autenticação - apresentação
+# Baiters Burger - Lambdas de Autenticação
 
 Este repositório contém as funções Lambda AWS responsáveis pelo sistema de autenticação do Baiters Burger, utilizando AWS Cognito como provedor de identidade.
 
